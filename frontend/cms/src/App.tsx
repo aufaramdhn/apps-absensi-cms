@@ -1,25 +1,27 @@
-import { useState } from "react";
-import "./index.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
+import Attendance from "./pages/Attendance";
+import Account from "./pages/Account";
+// Setting
+import Setting from "./pages/Setting";
+import Profile from "./pages/Setting/Profile";
+import Security from "./pages/Setting/Security";
 
 function App() {
-  const [open, setOpen] = useState(false);
   return (
-    <div className="flex">
-      <div
-        className={`h-screen bg-gray-800 ${open ? "w-[486px]" : "w-[186px]"} `}
-      >
-        Sidebar
-      </div>
-      <div className="w-full h-screen bg-gray-200">
-        <button
-          onClick={() => setOpen(!open)}
-          className="px-4 py-2 text-white bg-blue-500"
-        >
-          Toggle Sidebar
-        </button>
-        {open && <div>Open</div>}
-      </div>
-    </div>
+    <>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/Attendance" element={<Attendance />} />
+          <Route path="/Account" element={<Account />} />
+          {/* Setting */}
+          <Route path="/Setting" element={<Setting />} />
+          <Route path="/Setting/Profile" element={<Profile />} />
+          <Route path="/Setting/Security" element={<Security />} />
+        </Routes>
+      </Router>
+    </>
   );
 }
 
