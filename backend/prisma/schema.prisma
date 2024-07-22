@@ -20,12 +20,15 @@ enum Role {
 }
 
 model users {
-  id       Int     @id @default(autoincrement())
-  name     String
-  email    String  @unique
-  password String  @db.VarChar(10)
-  numberHp String  @db.VarChar(13)
-  address  String
-  photo    String?
-  role     Role    @default(STUDENT)
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String   @db.VarChar(10)
+  numberHp  String   @db.VarChar(13)
+  address   String
+  image     String?
+  urlImage  String
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
