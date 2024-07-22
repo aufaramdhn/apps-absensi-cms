@@ -1,6 +1,6 @@
-import express, { Request, Response } from "express"
+import express from "express"
 import dotenv from "dotenv"
-import UsersRouter from './routes/users/usersRoute.ts'
+import UsersRouter from './src/routes/users/usersRoute.js'
 
 
 dotenv.config()
