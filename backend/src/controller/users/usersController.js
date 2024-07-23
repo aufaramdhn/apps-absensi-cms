@@ -1,29 +1,14 @@
 import path from "path";
 import { PrismaClient } from "@prisma/client";
+import argon2 from "argon2";
 const prisma = new PrismaClient();
 
 // CREATE USER
-export const createUser = async(req, res) => {
+export const createUser = async (req, res) => {
   // INPUT DATA
-  const { name, email, password, numberHp, address, role } = req.body;
-  const image = req.files
+  const { name, email, password, confirmPassword, numberHp, address, role } = req.body;
 
-  if(image === null) return res.status(404).json({message: "No File Uploaded"})
-
-  // IMAGE
-  const file = image;
-  const fileSize = file.image.data.length;
-  const extension = path.extname(file.image.name);
-  const fileName = file.image.md5 + extension;
-  const url = `${req.protocol}://${req.get("host")}/images/${fileName}`;
-  const allowedType = [".png", ".jpg", ".jpeg"];
-
-  if (!allowedType.includes(extension.toLowerCase()))
-    return res.status(422).json({ message: "Invalid Images" });
-  if (fileSize > 3000000)
-    return res.status(422).json({ message: "image must be less than 5 MB" });
-  
-
+  // CHECK EMAIL
   const emailUser = await prisma.users.findUnique({
     where: {
       email: email,
@@ -32,13 +17,47 @@ export const createUser = async(req, res) => {
   if (emailUser)
     return res.status(400).json({ message: "Email Is Already Registered" });
 
-  file.image.mv(`../../public/images/${fileName}`, async () => {
+  // CHECK PASSWORD
+  if (password !== confirmPassword)
+    return res.status(400).json({ message: "Password and Confirm password Do not match" });
+      
+  // CHECK NUMBER HANDPHONE
+  if(numberHp.length >= 13) return res.status(400).json({message: "Number Handphone must be less than 13 number"})
+      
+  // CHECK FILE UPLOAD
+  if (req.files === null)
+    return res.status(404).json({ message: "No File Uploaded" });
+
+  // HASH PASSWORD
+  const hashPassword = await argon2.hash(password)
+
+
+
+  // IMAGE
+  const image = req.files.image;
+  const fileSize = image.data.length;
+  const extension = path.extname(image.name);
+  const fileName = image.md5 + extension;
+  const url = `${req.protocol}://${req.get("host")}/images/${fileName}`;
+  const allowedType = [".png", ".jpg", ".jpeg"];
+
+  // CHECK IMAGE
+  if (!allowedType.includes(extension.toLowerCase()))
+    return res.status(422).json({ message: "Invalid Images" });
+  if (fileSize > 3000000)
+    return res.status(422).json({ message: "image must be less than 5 MB" });
+
+
+  // QUERY TO DATABASE + MOVE FILE
+  image.mv(`./src/public/images/${fileName}`, async (err) => {
+    if (err) return res.status(500).json({ message: err.message });
     try {
       await prisma.users.create({
         data: {
           name: name,
           email: email,
-          password: password,
+          password: hashPassword,
+          confirmPassword: confirmPassword,
           numberHp: numberHp,
           address: address,
           image: fileName,
@@ -46,15 +65,15 @@ export const createUser = async(req, res) => {
           role: role,
         },
       });
-  
+
       res.status(200).json({
         message: "User Created Successfully",
       });
     } catch (error) {
       res.status(500).json({ message: error });
     }
-  })
-  
+  });
+
 };
 
 // GET DATA ALL USER
