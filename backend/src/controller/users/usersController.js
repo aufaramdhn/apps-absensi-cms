@@ -57,7 +57,6 @@ export const createUser = async (req, res) => {
           name: name,
           email: email,
           password: hashPassword,
-          confirmPassword: confirmPassword,
           numberHp: numberHp,
           address: address,
           image: fileName,

@@ -1,9 +1,7 @@
-import { PrismaClient } from '@prisma/client'
 import express from 'express'
 import { createUser, deleteUser, getUser, getUserById, updateUser } from '../../controller/users/usersController.js'
 
 const router = express.Router()
-const prisma = new PrismaClient()
 
 // Register
 router.post('/create', createUser)
