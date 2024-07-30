@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export const Login = async (req, res) => {
   // Get user
-  const user = await prisma.users.findFirst({
+  const user = await prisma.user.findFirst({
     where: {
       email: req.body.email,
     },
@@ -19,29 +19,7 @@ export const Login = async (req, res) => {
   // Check Password match or not at database
   if (!match) return res.status(400).json({ message: "Password Wrong" });
 
-  const payload = {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    numberHp: user.numberHp,
-    address: user.address,
-    role: user.role,
-  };
-  const token = jwt.sign(payload, process.env.TOKEN_SECRET, {
-    expiresIn: 60 * 60 * 1,
-  });
-
-  res.status(200).json({
-    data: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      numberHp: user.numberHp,
-      address: user.address,
-      role: user.role,
-    },
-    token: token,
-  });
+  req.session.userId = user.id
 };
 
 export const Logout = async (req, res) => {

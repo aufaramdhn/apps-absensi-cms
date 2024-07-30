@@ -19,16 +19,51 @@ enum Role {
   ADMIN
 }
 
-model users {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String   
-  numberHp  String   @db.VarChar(13)
-  address   String
+enum AttendanceDescription {
+  Absent
+  Present
+  Permission
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Admin {
+  id       String @id @default(cuid())
+  name     String
+  password String
+}
+
+model Student {
+  id       String   @id @default(cuid())
+  numberHp String   @db.VarChar(13)
+  address  String
+  attendance   Attendance[]
+}
+
+model Teacher {
+  id String @id @default(cuid())
+}
+
+model User {
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
   image     String?
   urlImage  String
-  role      Role     @default(STUDENT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  sessions  Session[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Attendance {
+  id        String  @id @default(cuid())
+  studentId String
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }

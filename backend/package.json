@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^5.11.0",
+    "@quixo3/prisma-session-store": "^3.1.13",
     "argon2": "^0.40.3",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
